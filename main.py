@@ -2,6 +2,8 @@ import sys, os, time
 from datetime import datetime
 from hashlib import sha256
 
+import block
+
 # prefix_zeros is our equivalent of a target
 PREFIX_ZEROS = '000'  # The more leading zeros the harder the mining
 
