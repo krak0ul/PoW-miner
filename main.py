@@ -5,7 +5,7 @@ from hashlib import sha256
 def SHA256(text):
     return sha256(text.encode("ascii")).hexdigest()
 
-def mine(block_number, transactions, previous_hash, prefix_zeros):
+def mine(block_number, transaction_list, previous_hash, prefix_zeros):
 # TODO
     return
 
