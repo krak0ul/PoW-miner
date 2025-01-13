@@ -3,7 +3,7 @@ from datetime import datetime
 from hashlib import sha256
 
 # prefix_zeros is our equivalent of a target
-PREFIX_ZEROS = '00'  # The more leading zeros the harder the mining
+PREFIX_ZEROS = '000'  # The more leading zeros the harder the mining
 
 transaction_list = [
     ['Sender', 'Receiver', '20'],
@@ -23,7 +23,7 @@ def mine(block_number, transaction_list, previous_hash, PREFIX_ZEROS):
     block_hash = SHA256(repr(transaction_list))
 
 # while the first characters of block_hash != PREFIX_ zeros, iterate nonce
-    while block_hash[:(len(PREFIX_ZEROS)-1)] != PREFIX_ZEROS:
+    while block_hash[:(len(PREFIX_ZEROS))] != PREFIX_ZEROS:
         nonce += 1
         block_hash = SHA256(f"{transaction_list}{nonce}")
         print(block_hash)
