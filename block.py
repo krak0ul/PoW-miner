@@ -13,11 +13,19 @@ class Block():
 
     def __repr__(self):
         return f"version: {self.version} \nPrevious hash: {self.previous_hash} \nMerkle root: {self.merkle_root} \
-                s\nTimestamp: {self.timestamp}\nPrefix zeros: {self.prefix_zeros} \nNonce: {self.nonce}\n"
+                \nTimestamp: {self.timestamp}\nPrefix zeros: {self.prefix_zeros} \nNonce: {self.nonce}\n"
     
     def info(self):
         return "Timestamp: {self.timestamp}\nPrefix zeros: {self.prefix_zeros} \nNonce: {self.nonce}\n"
     
+    def transactions(self):
+        print("Transaction list:")
+        for i in self.transaction_list:
+            print(f"From {i[0]}\tto {i[1]}\tAmmount: {i[2]} MxCoin")
+
+    def all_info(self):
+        return self.__repr__(self) 
+
     def SHA256(self, text): 
         return sha256(text.encode("ascii")).hexdigest()
 
