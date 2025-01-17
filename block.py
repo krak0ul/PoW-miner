@@ -6,7 +6,7 @@ class Block():
         self.version = version
         self.previous_hash = previous_hash
         self.merkle_root = merkle_root
-        self.timestamp = timestamp #or int(time.time())
+        self.timestamp = timestamp
         self.prefix_zeros = prefix_zeros
         self.nonce = nonce
         self.transaction_list = transaction_list
@@ -36,10 +36,10 @@ class Block():
         while True:
             block_hash = self.SHA256(repr(self))
             
-            if( block_hash[:prefix_zeros] == '0'*prefix_zeros ):
+            if (block_hash[:prefix_zeros] == '0'*prefix_zeros ):
                 # print(block_hash[:prefix_zeros])
                 # print('0'*prefix_zeros)
-                self.timestamp = time.time()
+                self.timestamp = int(time.time())
                 return block_hash
             self.nonce += 1
     
