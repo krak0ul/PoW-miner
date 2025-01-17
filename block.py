@@ -27,19 +27,19 @@ class Block():
         return self.__repr__(self) 
 
     def SHA256(self, text): 
-        return sha256(text.encode("ascii")).hexdigest()
+        return sha256(text.encode("utf-8")).hexdigest()
 
-    def mine(self, prefix_zeros):
+    def mine(self):
         self.nonce = 0
 
         # iterate nonce while the first characters of block_hash != PREFIX_ZEROS
         while True:
             block_hash = self.SHA256(repr(self))
             
-            if (block_hash[:prefix_zeros] == '0'*prefix_zeros ):
+            if (block_hash[:self.prefix_zeros] == '0'*self.prefix_zeros ):
                 # print(block_hash[:prefix_zeros])
                 # print('0'*prefix_zeros)
-                self.timestamp = int(time.time())
+                self.timestamp = time.time()
                 return block_hash
             self.nonce += 1
     
