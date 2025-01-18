@@ -2,21 +2,21 @@ import time
 from hashlib import sha256
 
 class Block():
-    def __init__(self, previous_hash, merkle_root, target, transaction_list, timestamp=0, nonce=0, version = 42):
+    def __init__(self, previous_hash, merkle_root, prefix_zeros, transaction_list, timestamp=0, nonce=0, version = 42):
         self.version = version
         self.previous_hash = previous_hash
         self.merkle_root = merkle_root
         self.timestamp = timestamp
-        self.target = target
+        self.prefix_zeros = prefix_zeros
         self.nonce = nonce
         self.transaction_list = transaction_list
 
     def __repr__(self):
         return f"version: {self.version} \nPrevious hash: {self.previous_hash} \nMerkle root: {self.merkle_root} \
-                \nTimestamp: {self.timestamp}\nTarget: {self.target} \nNonce: {self.nonce}\n"
+                \nTimestamp: {self.timestamp}\nPrefix zeros: {self.prefix_zeros} \nNonce: {self.nonce}\n"
     
     def info(self):
-        return "Timestamp: {self.timestamp}\nTarget: {self.target} \nNonce: {self.nonce}\n"
+        return "Timestamp: {self.timestamp}\nPrefix zeros: {self.prefix_zeros} \nNonce: {self.nonce}\n"
     
     def transactions(self):
         print("Transaction list:")
@@ -32,13 +32,13 @@ class Block():
     def mine(self):
         self.nonce = 0
 
-        # iterate nonce while  block_hash is bigger than the target
+        # iterate nonce while the first characters of block_hash != PREFIX_ZEROS
         while True:
             block_hash = self.SHA256(repr(self))
             
-            if (bytearray.fromhex(block_hash) <= self.target ):
-                # print(block_hash[:target])
-                # print('0'*target)
+            if (block_hash[:self.prefix_zeros] == '0'*self.prefix_zeros ):
+                # print(block_hash[:prefix_zeros])
+                # print('0'*prefix_zeros)
                 self.timestamp = time.time()
                 return block_hash
             self.nonce += 1

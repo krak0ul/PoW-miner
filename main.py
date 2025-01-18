@@ -5,11 +5,10 @@ import randomname, random
 
 from block import Block
 
-# prefix_zeros is our equivalent of a target
-PREFIX_ZEROS = 5            # The more leading zeros the harder the mining
+INITIAL_TARGET = bytearray.fromhex("ff00000000000000")          # The more leading zeros the harder the mining
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
 BLOCK_TIME_TARGET = 10      # target time between each block
-DIFFICULTY_PERIOD = 10      # targe will be computed every DIFFICULTY_PERIOD blocks
+DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD blocks
 
 block_chain = []
 block_times = []
@@ -36,23 +35,24 @@ def mine_time(timestamp, new_timestamp):
 def avg_mine_time(block_times):
     return sum(block_times) / len(block_times)
 
-
-def compute_difficulty(block_times, block_time_target, prefix_zeros):
+# TODO: change prefix_zeros to target like in bitcoin (nbits)
+def compute_difficulty(block_times, block_time_target, target):
     average_time = avg_mine_time(block_times)
-    print(f"Avg time: {average_time}")
+    # print(f"Avg time: {average_time}")
+
     ratio = block_time_target / average_time
 
-    if ratio > 1.5 :
-        ratio = 1.5
-    # elif ratio 
+    if ratio > 4 :      # cap the max ratio change to a factor of 4, like in bitcoin
+        ratio = 4
+
     print(f"Ratio: {ratio}")
-    return int(prefix_zeros * ratio)
+    return int(target * ratio)
 
 
 def main():
     block_number = 0
     previous_hash = 0
-    prefix_zeros = PREFIX_ZEROS
+    target = INITIAL_TARGET
     timestamp = time.time()
 
     while True:
@@ -60,7 +60,7 @@ def main():
         transaction_list = gen_transactions(MAX_BLOCK_SIZE)
 
         # create new block and mine it
-        new_block = Block(previous_hash, sha256(repr(transaction_list).encode("utf-8")).hexdigest(), prefix_zeros, transaction_list)
+        new_block = Block(previous_hash, sha256(repr(transaction_list).encode("utf-8")).hexdigest(), target, transaction_list)
         previous_hash = new_block.mine()
 
         print(f"Mined block {block_number}")
@@ -79,14 +79,14 @@ def main():
         print(f"time to mine: {block_time}\n")
 
         # compute difficulty
-        block_times.append(block_time)
+        block_times.append(block_time)                  # handle list of previous block times
         if len(block_times) > DIFFICULTY_PERIOD:
             block_times.pop(0)
 
-        if block_number % 10 == 0:
-            prefix_zeros = compute_difficulty(block_times, BLOCK_TIME_TARGET, prefix_zeros)
+        if block_number % DIFFICULTY_PERIOD == 0:          # compute new target
+            target = compute_difficulty(block_times, BLOCK_TIME_TARGET, target)
             print("block times: " + repr(block_times))
-            print(prefix_zeros)
+            print(target)
 
         
         print("------------------------------------------------")
