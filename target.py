@@ -1,6 +1,7 @@
 class Target:
 
-    def __init__(self, target):
+    def __init__(self, difficulty_period, target):
+        self.difficulty_period = difficulty_period
         self.target = target
     
     def get_long_target(self):
@@ -38,3 +39,6 @@ class Target:
         self.target = self.get_short_target(new_long_target)
 
         return self.target
+    
+    def difficulty(self):
+        return

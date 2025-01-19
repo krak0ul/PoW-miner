@@ -1,10 +1,9 @@
 import sys, os, time
 from datetime import datetime
-import randomname, random
 
 from block import Block
 from target import Target
-from utils import SHA256, avg_mine_time, mine_time
+from utils import SHA256, avg_mine_time, mine_time, gen_transactions
 
 INITIAL_TARGET = 0x200f0000        # The more smaller the target the harder the mining - simplified view
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
@@ -12,27 +11,11 @@ BLOCK_TIME_TARGET = 10      # target time between each block (seconds)
 DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD blocks
 
 block_chain = []
-block_times = []
-
-
-def gen_transactions(max_block_size):
-    ''' Generate random transactions'''
-    # Returns a list containing max_block_size transactions
-    transaction_list = []
-    for i in range(max_block_size):
-        sender = randomname.get_name()
-        recipient = randomname.get_name()
-        ammount = random.randint(0, 10000)
-    
-        transaction = [sender, recipient, ammount]
-        transaction_list.append(transaction)
-    return transaction_list
 
 
 
 def main():
-    block_number = 0
-    target = Target(INITIAL_TARGET)
+    target = Target(DIFFICULTY_PERIOD, INITIAL_TARGET)
     old_timestamp = time.time()
 
     while True:
@@ -43,27 +26,21 @@ def main():
         new_block = Block(SHA256(repr(transaction_list)), target.target, transaction_list)
         previous_hash = new_block.mine()
 
-        print(f"Mined block {block_number}")
+        print(f"Mined block {len(block_chain)}")
         new_block.info()
         # new_block.transactions()
 
         # add blocks to the chain array
         block_chain.append(new_block)
-        block_number += 1
-
 
         # compute mine time
-        block_time = mine_time(old_timestamp, new_block.timestamp)
-        old_timestamp = new_block.timestamp
-        print(f"time to mine: {block_time}\n")
+        block_time = mine_time(block_chain)
+        print(f"time to mine: {block_time}")
+        print("\n------------------------------------------------\n")
 
-        # compute difficulty
-        block_times.append(block_time)                  # handle list of previous block times
-        if len(block_times) > DIFFICULTY_PERIOD:
-            block_times.pop(0)
-
-        if block_number % DIFFICULTY_PERIOD == 0:          # compute new target
-            average_time = avg_mine_time(block_times)
+        # compute new target
+        if len(block_chain) % target.difficulty_period == 0:
+            average_time = avg_mine_time(block_chain, DIFFICULTY_PERIOD)
             print("------------------------------------------------------")
             print("Computing new target")
             print(f"Average block time: {average_time}")
@@ -73,7 +50,6 @@ def main():
             print("------------------------------------------------------")
 
         
-        print("------------------------------------------------")
 
 
 if __name__ == '__main__':

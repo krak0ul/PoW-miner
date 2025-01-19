@@ -17,7 +17,7 @@ class Block():
 
     def __repr__(self):
         return f"{self.version}{self.previous_hash}{self.merkle_root}\
-                {self.timestamp}{self.target}{self.nonce}\n"
+                {self.timestamp}{self.target}{self.nonce}{self.transaction_list}"
     
     def info(self):
         print(f"version: {self.version} \nPrevious hash: {self.previous_hash} \nMerkle root: {self.merkle_root} \
@@ -30,6 +30,9 @@ class Block():
 
     def all_info(self):
         return self.__repr__(self) 
+    
+    def get_timestamp(self):
+        return self.timestamp
 
 
     def get_long_target(self):
