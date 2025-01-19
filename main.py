@@ -3,7 +3,7 @@ from datetime import datetime
 
 from block import Block
 from target import Target
-from utils import SHA256, avg_mine_time, mine_time, gen_transactions
+from utils import SHA256, mine_time, gen_transactions
 
 INITIAL_TARGET = 0x200f0000        # The smaller the target the harder the mining - simplified view
 MAX_BLOCK_SIZE = 4          # number of transactions in a block

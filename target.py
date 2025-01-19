@@ -1,4 +1,4 @@
-from utils import avg_mine_time
+from utils import avg_mine_time, get_long_target
 
 class Target:
 
@@ -6,12 +6,6 @@ class Target:
         self.difficulty_period = difficulty_period
         self.target = target
     
-    def get_long_target(self):
-        exponent = (self.target >> 24) & 0xFF
-        significand = self.target & 0xFFFFFF
-        # Calculate the long target
-        long_target = significand * (2 ** (8 * (exponent - 3)))      # substract 3 to exponent because significand represents the first 3 bytes of target
-        return long_target
 
     def get_short_target(self, long_target):
         exponent = (long_target.bit_length() + 7) // 8
@@ -37,7 +31,7 @@ class Target:
         # ratio = min(max(ratio, 0.25), 4)
         print(f"ratio: {ratio}")
         
-        new_long_target = int(self.get_long_target() * ratio)
+        new_long_target = int(get_long_target(self.target) * ratio)
         self.target = self.get_short_target(new_long_target)
 
         return self.target
@@ -48,8 +42,8 @@ class Target:
             print("------------------------------------------------------")
             print("Computing new target")
             print(f"Average block time: {average_time}")
-            print(f"old target: {hex(self.get_long_target())}")
+            print(f"old target: {hex(get_long_target(self.target))}")
             self.compute_difficulty(average_time, block_time_target)
-            print(f"new target: {hex(self.get_long_target())}")
+            print(f"new target: {hex(get_long_target(self.target))}")
             print("------------------------------------------------------")
         return

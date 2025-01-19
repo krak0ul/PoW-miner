@@ -1,5 +1,5 @@
 import time
-from utils import SHA256
+from utils import SHA256, get_long_target
 
 
 # TODO
@@ -21,7 +21,7 @@ class Block():
     
     def info(self):
         print(f"version: {self.version} \nPrevious hash: {self.previous_hash} \nMerkle root: {self.merkle_root} \
-                \nTimestamp: {self.timestamp}\nTarget: {self.get_long_target()} {hex(self.target)} \nNonce: {self.nonce}\n")
+                \nTimestamp: {self.timestamp}\nTarget: {get_long_target(self.target)} {hex(self.target)} \nNonce: {self.nonce}\n")
 
     def transactions(self):
         print("Transaction list:")
@@ -35,15 +35,6 @@ class Block():
         return self.timestamp
 
 
-    def get_long_target(self):
-        exponent = (self.target >> 24) & 0xFF
-        significand = self.target & 0xFFFFFF
-
-        # Calculate the long target
-        long_target = significand * (2 ** (8 * (exponent - 3)))      # substract 3 to exponent because significand represents the first 3 bytes of target
-        return long_target
-
-
     def mine(self):
         self.nonce = 0
 
@@ -51,7 +42,7 @@ class Block():
         while True:
             block_hash = int(SHA256(repr(self)), 16)   # hash as hex int type, not string
             
-            if (block_hash <= self.get_long_target() ):
+            if (block_hash <= get_long_target(self.target) ):
                 self.timestamp = time.time()
                 return block_hash
             self.nonce += 1

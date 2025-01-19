@@ -17,6 +17,15 @@ def avg_mine_time(block_chain, difficulty_period):
     return average
 
 
+def get_long_target(target):
+    exponent = (target >> 24) & 0xFF
+    significand = target & 0xFFFFFF
+
+    # Calculate the long target
+    long_target = significand * (2 ** (8 * (exponent - 3)))      # substract 3 to exponent because significand represents the first 3 bytes of target
+    return long_target
+
+
 def gen_transactions(max_block_size):
     ''' Generate random transactions'''
     # Returns a list containing max_block_size transactions
