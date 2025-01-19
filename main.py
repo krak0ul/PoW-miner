@@ -5,7 +5,7 @@ from block import Block
 from target import Target
 from utils import SHA256, mine_time, gen_transactions
 
-INITIAL_TARGET = 0x200f0000        # The smaller the target the harder the mining - simplified view
+INITIAL_TARGET = 0x200f0000        # The smaller the target the harder the mining - simplified view of 0x0f00000000000000000000000000000000000000000000000000000000000000
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
 BLOCK_TIME_TARGET = 10      # aimed time between each block (seconds)
 DIFFICULTY_PERIOD = 100     # new target will be computed every DIFFICULTY_PERIOD blocks
