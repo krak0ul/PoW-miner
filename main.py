@@ -1,13 +1,14 @@
 import sys, os, time
 from datetime import datetime
-from hashlib import sha256
 import randomname, random
 
 from block import Block
+from target import Target
+from utils import SHA256, avg_mine_time, mine_time
 
-INITIAL_TARGET = bytearray.fromhex("ff00000000000000")          # The more leading zeros the harder the mining
+INITIAL_TARGET = 0x200f0000        # The more smaller the target the harder the mining - simplified view
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
-BLOCK_TIME_TARGET = 10      # target time between each block
+BLOCK_TIME_TARGET = 10      # target time between each block (seconds)
 DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD blocks
 
 block_chain = []
@@ -28,54 +29,32 @@ def gen_transactions(max_block_size):
     return transaction_list
 
 
-def mine_time(timestamp, new_timestamp):
-    return new_timestamp - timestamp
-
-
-def avg_mine_time(block_times):
-    return sum(block_times) / len(block_times)
-
-# TODO: change prefix_zeros to target like in bitcoin (nbits)
-def compute_difficulty(block_times, block_time_target, target):
-    average_time = avg_mine_time(block_times)
-    # print(f"Avg time: {average_time}")
-
-    ratio = block_time_target / average_time
-
-    if ratio > 4 :      # cap the max ratio change to a factor of 4, like in bitcoin
-        ratio = 4
-
-    print(f"Ratio: {ratio}")
-    return int(target * ratio)
-
 
 def main():
     block_number = 0
-    previous_hash = 0
-    target = INITIAL_TARGET
-    timestamp = time.time()
+    target = Target(INITIAL_TARGET)
+    old_timestamp = time.time()
 
     while True:
         # Generate random transactions
         transaction_list = gen_transactions(MAX_BLOCK_SIZE)
 
         # create new block and mine it
-        new_block = Block(previous_hash, sha256(repr(transaction_list).encode("utf-8")).hexdigest(), target, transaction_list)
+        new_block = Block(SHA256(repr(transaction_list)), target.target, transaction_list)
         previous_hash = new_block.mine()
 
         print(f"Mined block {block_number}")
-        # print(repr(new_block))
+        new_block.info()
         # new_block.transactions()
 
-        # add blocks to the array
+        # add blocks to the chain array
         block_chain.append(new_block)
         block_number += 1
 
 
         # compute mine time
-        new_timestamp = new_block.timestamp
-        block_time = mine_time(timestamp, new_timestamp)
-        timestamp = new_timestamp
+        block_time = mine_time(old_timestamp, new_block.timestamp)
+        old_timestamp = new_block.timestamp
         print(f"time to mine: {block_time}\n")
 
         # compute difficulty
@@ -84,9 +63,14 @@ def main():
             block_times.pop(0)
 
         if block_number % DIFFICULTY_PERIOD == 0:          # compute new target
-            target = compute_difficulty(block_times, BLOCK_TIME_TARGET, target)
-            print("block times: " + repr(block_times))
-            print(target)
+            average_time = avg_mine_time(block_times)
+            print("------------------------------------------------------")
+            print("Computing new target")
+            print(f"Average block time: {average_time}")
+            print(f"old target: {hex(target.get_long_target())}")
+            target.compute_difficulty(average_time, BLOCK_TIME_TARGET)
+            print(f"new target: {hex(target.get_long_target())}")
+            print("------------------------------------------------------")
 
         
         print("------------------------------------------------")

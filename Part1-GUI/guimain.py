@@ -6,10 +6,10 @@ from hashlib import sha256
 import randomname
 import random
 from threading import Thread, Event
-from block import Block
+from oldBlock import Block
 
 # Configuration
-PREFIX_ZEROS = 4
+PREFIX_ZEROS = 5
 MAX_BLOCK_SIZE = 4
 block_chain = []
 
@@ -136,7 +136,7 @@ class BlockchainApp(tk.Tk):
                 PREFIX_ZEROS,
                 transaction_list,
             )
-            block_hash = new_block.mine(PREFIX_ZEROS)
+            block_hash = new_block.mine()
             new_block.timestamp = time.time()
             block_chain.append(new_block)
 
