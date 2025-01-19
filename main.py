@@ -5,7 +5,7 @@ from block import Block
 from target import Target
 from utils import SHA256, avg_mine_time, mine_time, gen_transactions
 
-INITIAL_TARGET = 0x200f0000        # The more smaller the target the harder the mining - simplified view
+INITIAL_TARGET = 0x200f0000        # The smaller the target the harder the mining - simplified view
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
 BLOCK_TIME_TARGET = 10      # target time between each block (seconds)
 DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD blocks
@@ -13,18 +13,19 @@ DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD bl
 block_chain = []
 
 
-
 def main():
+    # initialize target hash difficulty class
     target = Target(DIFFICULTY_PERIOD, INITIAL_TARGET)
-    old_timestamp = time.time()
+    previous_hash = 0
 
     while True:
         # Generate random transactions
         transaction_list = gen_transactions(MAX_BLOCK_SIZE)
 
         # create new block and mine it
-        new_block = Block(SHA256(repr(transaction_list)), target.target, transaction_list)
-        previous_hash = new_block.mine()
+        new_block = Block(SHA256(repr(transaction_list)), target.target, transaction_list, previous_hash)
+        new_block.mine()
+        previous_hash = SHA256(repr(new_block))
 
         print(f"Mined block {len(block_chain)}")
         new_block.info()
@@ -40,7 +41,7 @@ def main():
 
         # compute new target
         if len(block_chain) % target.difficulty_period == 0:
-            average_time = avg_mine_time(block_chain, DIFFICULTY_PERIOD)
+            average_time = avg_mine_time(block_chain, target.difficulty_period)
             print("------------------------------------------------------")
             print("Computing new target")
             print(f"Average block time: {average_time}")
