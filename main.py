@@ -7,8 +7,8 @@ from utils import SHA256, mine_time, gen_transactions
 
 INITIAL_TARGET = 0x200f0000        # The smaller the target the harder the mining - simplified view
 MAX_BLOCK_SIZE = 4          # number of transactions in a block
-BLOCK_TIME_TARGET = 10      # target time between each block (seconds)
-DIFFICULTY_PERIOD = 10      # target will be computed every DIFFICULTY_PERIOD blocks
+BLOCK_TIME_TARGET = 10      # aimed time between each block (seconds)
+DIFFICULTY_PERIOD = 100     # new target will be computed every DIFFICULTY_PERIOD blocks
 
 block_chain = []
 
@@ -27,7 +27,7 @@ def main():
         previous_hash = new_block.mine()
 
         print(f"Mined block {len(block_chain)}")
-        new_block.info()
+        # new_block.info()
         # new_block.transactions()
 
         # add blocks to the chain array

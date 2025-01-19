@@ -37,13 +37,18 @@ class Target:
         return self.target
     
     def difficulty(self, block_chain, block_time_target):
+
         if len(block_chain) % self.difficulty_period == 0:
+
             average_time = avg_mine_time(block_chain, self.difficulty_period)
-            print("------------------------------------------------------")
+
+            print("------------------------------------------------------------------------------------")
             print("Computing new target")
             print(f"Average block time: {average_time}")
             print(f"old target: {hex(get_long_target(self.target))}")
+
             self.compute_difficulty(average_time, block_time_target)
+
             print(f"new target: {hex(get_long_target(self.target))}")
-            print("------------------------------------------------------")
+            print("------------------------------------------------------------------------------------")
         return
